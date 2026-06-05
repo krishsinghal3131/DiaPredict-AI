@@ -1,0 +1,40 @@
+# ==========================================
+# PROJECT: DiaPredict AI (Diabetes Prediction)
+# ==========================================
+
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn import svm
+from sklearn.metrics import accuracy_score
+
+# 1. Dataset load karna (Apna file path check kar lena)
+diabetes_dataset = pd.read_csv('diabetes.csv') 
+
+# 2. Features (X) aur Labels (Y) ko alag karna
+# 'Outcome' column ko hata kar baaki saare columns X mein daale
+X = diabetes_dataset.drop(columns='Outcome', axis=1)
+Y = diabetes_dataset['Outcome']
+
+# 3. Data Standardization (Sabhi features ko ek common scale par lana)
+scaler = StandardScaler()
+# Naap lena aur data ko badalna dono ek saath (fit + transform)
+X_standardized = scaler.fit_transform(X)
+
+# Scaled data ko final X assign kiya aur Y to hamara target hai hi
+X = X_standardized
+Y = diabetes_dataset['Outcome']
+
+# 4. Train-Test Split (80% Data Training ke liye, 20% Testing ke liye)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=2)
+
+# 5. Model ko Initialise aur Train karna (SVM Classifier with Linear Kernel)
+classifier = svm.SVC(kernel='linear')
+classifier.fit(X_train, Y_train)
+
+# 6. Model Evaluation (Training Data par Accuracy check karna)
+X_train_prediction = classifier.predict(X_train)
+training_data_accuracy = accuracy_score(X_train_prediction, Y_train)
+
+print(f"DiaPredict AI Training Data Accuracy: {training_data_accuracy * 100:.2f}%")
